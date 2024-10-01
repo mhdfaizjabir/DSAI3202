@@ -1,0 +1,77 @@
+import threading
+import time
+
+# Function for each thread to calculate sum for part of the range
+def calculate_sum_for_threads(start: int = 0, end: int = 10, results_list=[]):
+    thread_sum = 0
+    for i in range(start, end + 1):
+        thread_sum += i
+    results_list.append(thread_sum)
+
+# Sequential sum function to sum numbers from 1 to n
+def calculate_serial_sum(n: int):
+    total_sum = 0
+    for i in range(1, n + 1):
+        total_sum += i
+    return total_sum
+
+# Number to sum up to
+n = int(1e8)  # 100,000,000
+
+# Number of threads to use
+number_threads = 3
+
+# --- Parallel Version Using Threads ---
+
+# Divide the range into steps for each thread
+step = n // number_threads
+
+# Lists to store threads and results
+threads = []
+results = []
+
+# Create threads and assign a range to each one
+for i in range(number_threads):
+    start_thread = i * step + 1
+    end_thread = (i + 1) * step if i != number_threads - 1 else n  # Last thread takes up to 'n'
+    
+    thread = threading.Thread(target=calculate_sum_for_threads, args=(start_thread, end_thread, results))
+    threads.append(thread)
+
+# Start timing the parallel summation
+parallel_start_time = time.time()
+
+# Start all threads
+for thread in threads:
+    thread.start()
+
+# Wait for all threads to complete
+for thread in threads:
+    thread.join()
+
+# End timing the parallel summation
+parallel_end_time = time.time()
+
+# Calculate total sum from all threads
+parallel_sum = sum(results)
+
+# --- Sequential Version ---
+
+# Start timing the sequential summation
+serial_start_time = time.time()
+
+# Calculate the sum sequentially
+serial_sum = calculate_serial_sum(n)
+
+# End timing the sequential summation
+serial_end_time = time.time()
+
+# --- Print Results ---
+
+# Parallel Results
+print(f"Parallel Sum: {parallel_sum}")
+print(f"Time taken (Parallel): {parallel_end_time - parallel_start_time:.4f} seconds")
+
+# Sequential Results
+print(f"Sequential Sum: {serial_sum}")
+print(f"Time taken (Sequential): {serial_end_time - serial_start_time:.4f} seconds")
