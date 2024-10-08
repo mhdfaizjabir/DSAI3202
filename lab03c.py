@@ -56,7 +56,7 @@ efficiency = process_speedup / num_process
 print("the  efficiency ",efficiency)
 
 
-P= process_start/process_total_time
+P= process_start/(process_total_time+serial_total_time)
 
 
 speedup_amdahl =  1/(1-P)+(P/4)
